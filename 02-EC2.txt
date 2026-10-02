@@ -1,0 +1,30 @@
+General Purpose instance family (T, M) – optimized for and use cases?	Balanced CPU/Memory/Network. Web servers, dev/test, small DBs. Memory aid: T = Tiny/Burstable; M = Most balanced.	EC2
+Compute Optimized (C) – optimized for and use cases?	High CPU. Batch processing, HPC, gaming servers, ML inference. Memory aid: C = CPU crunching.	EC2 mnemonic
+Memory Optimized (R, X, z, u) – optimized for and use cases?	High RAM. In-memory DBs (Redis), SAP HANA, big data analytics. Memory aid: R = RAM; X = eXtra RAM.	EC2 mnemonic
+Storage Optimized (I, D, H) – optimized for and use cases?	High I/O throughput. NoSQL DBs, data warehousing, Hadoop, OLAP. Memory aid: I = IOPS; D = Dense storage.	EC2 mnemonic
+Accelerated Computing (P, G, F, Inf, Trn) – optimized for and use cases?	GPU / FPGA / AI chips. ML training, video transcoding, HPC, genomics. Memory aid: P/G = GPU; Inf/Trn = AI chips.	EC2 mnemonic
+On-Demand purchasing option – discount, commitment, best for, exam keywords?	0% discount, no commitment. Short-term/unpredictable workloads. Keywords: “short-term”, “unpredictable”, “testing”.	EC2
+Reserved Instances (Standard) – discount, commitment, best for, exam keywords?	Up to 72%, 1 or 3 years. Steady-state predictable workloads. Keywords: “steady state”, “always running”, “known load”.	EC2
+Reserved Instances (Convertible) – discount and when to use?	Up to 66%, 1 or 3 years. Same as Standard but you need flexibility to change instance type. Keyword: “need flexibility”, “might change instance”.	EC2
+Savings Plans (Compute) – discount and best for?	Up to 66%, 1 or 3 years. Most flexible: auto-applies to EC2, Fargate, Lambda. Keywords: “most flexible”, “Lambda + EC2 mix”.	EC2
+Spot Instances – discount, commitment, best for, exam keywords?	Up to 90%, none (can be interrupted). Fault-tolerant, batch, stateless workloads. Keywords: “fault tolerant”, “batch”, “cheapest”.	EC2
+Dedicated Hosts – when to use and key difference?	Compliance / BYOL (bring-your-own-license). You control the physical server (socket/core visibility). Keywords: “BYOL”, “compliance”, “per-socket licensing”.	EC2
+Dedicated Instances vs Dedicated Hosts – exam trap?	Dedicated Instances = hardware isolation (no sharing with other customers) but you do NOT control the host. Dedicated Hosts give full physical server control for BYOL.	EC2 exam-trap
+Capacity Reservations – when to use?	Guarantee capacity in a specific AZ for critical workloads. You still pay On-Demand price.	EC2
+Spot Instance interruption warning?	AWS gives a 2-minute warning via instance metadata (spot/termination-time) and EventBridge. Design workloads to checkpoint state.	EC2
+EBS gp3 – type, max IOPS, key facts?	Block, persistent, 16,000 IOPS. Baseline 3,000 IOPS; you can independently provision IOPS and throughput. General purpose OS volumes.	EC2 EBS
+EBS io2 Block Express – max IOPS, durability, special feature?	256,000 IOPS, 99.999% durability, Multi-Attach (up to 16 instances in same AZ). Critical databases (Oracle, SAP).	EC2 EBS
+EBS st1 and sc1 – key facts?	Both HDD, NOT bootable. st1 = Throughput-optimized (500 IOPS, sequential large files). sc1 = Cold/infrequent (250 IOPS, cheapest HDD).	EC2 EBS
+Instance Store – key facts?	Block, ephemeral (lost on stop/terminate), millions of IOPS possible. Temp buffer/cache; fastest possible I/O.	EC2
+EFS – type and key facts?	File (NFS), persistent, Multi-AZ, auto-scales, Linux only. Shared filesystem across instances (500K+ IOPS possible).	EC2 EFS
+FSx for Windows vs FSx for Lustre?	Windows: SMB, managed Windows File Server, Active Directory integration.<br>Lustre: POSIX, HPC/ML/financial modeling, can link to S3, sub-ms latency.	EC2 FSx
+EBS Multi-Attach – which volumes and key restriction?	Only io1/io2. Multiple EC2 instances in the SAME AZ can attach the same volume. Used for clustered DBs (Oracle RAC). Concurrent writes must be managed by the application.	EC2 EBS
+Auto Scaling – Target Tracking policy?	Maintains a metric at a target (e.g., CPU = 50%). Simplest; best for most workloads. Exam: “keep CPU at 40%” → Target Tracking.	EC2 ASG
+Auto Scaling – Step Scaling?	Adds/removes capacity in steps based on alarm thresholds. Exam: “add 2 at 70%, add 4 at 90%” → Step Scaling.	EC2 ASG
+Auto Scaling – Scheduled and Predictive?	Scheduled: Scale on cron (predictable load patterns, e.g., Monday 9am spike).<br>Predictive: ML forecasts future load and scales proactively (cyclical workloads).	EC2 ASG
+Default ASG Termination Policy?	Terminates the instance in the AZ with the most instances, preferring the one with the oldest launch template/config, then the one closest to the next billing hour.	EC2 ASG
+ASG Lifecycle Hooks – what do they do?	Pause instance launch or termination to run custom scripts (install software, drain connections, backup). Triggered via EventBridge or SQS/SNS → Lambda.	EC2 ASG
+Placement Group – Cluster strategy?	All instances in same AZ, same rack → ultra-low latency. HPC, tightly coupled jobs. Risk: single rack failure takes everything; cannot span AZs.	EC2
+Placement Group – Spread strategy?	Each instance on distinct hardware. Max 7 per AZ per group. Critical instances that must survive hardware failure (Kafka, ZooKeeper).	EC2
+Placement Group – Partition strategy?	Groups of instances (partitions) on separate racks; up to 7 partitions per AZ. Distributed databases needing rack awareness (Cassandra, HBase, Hadoop).	EC2
+Placement Groups mnemonic?	CSP = Cluster (Speed), Spread (Safety), Partition (Scale-Safety).	EC2 mnemonic

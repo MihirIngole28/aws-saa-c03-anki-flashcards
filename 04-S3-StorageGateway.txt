@@ -1,0 +1,28 @@
+S3 Standard – use case and cost pattern?	Frequently accessed data. Highest per-GB storage cost; no retrieval fee. No minimum duration or object size. Millisecond retrieval.	S3
+S3 Intelligent-Tiering – when to use?	Unknown or changing access patterns. Monitoring fee; automatically moves objects between tiers. Objects < 128 KB stay in Frequent Access.	S3
+S3 Standard-IA – key constraints?	Infrequently accessed data that still needs rapid retrieval. 30-day minimum duration, 128 KB minimum object size. Lower storage cost + retrieval fee.	S3
+S3 One Zone-IA – key difference from Standard-IA?	Same access pattern but stored in a single AZ only (20% cheaper). Can tolerate loss of that AZ. 30-day min duration, 128 KB min size.	S3
+S3 Glacier Instant Retrieval – retrieval time and min duration?	Archives accessed roughly once a quarter. Millisecond retrieval. 90-day minimum duration, 128 KB min size.	S3
+S3 Glacier Flexible Retrieval – retrieval times?	1 minute – 12 hours. Cheaper storage than Instant Retrieval. 90-day min duration, 40 KB min size.	S3
+S3 Glacier Deep Archive – use case and retrieval time?	Long-term compliance archives (7–10 years). Cheapest storage. 12–48 hour retrieval. 180-day min duration, 40 KB min size.	S3
+S3 Express One Zone – what is it?	Ultra-low latency, high-throughput workloads. Single-digit millisecond latency. Premium pricing; single AZ only (introduced 2023).	S3
+Common Lifecycle Policy pattern for cost optimization?	Standard → Standard-IA (after 30 days) → Glacier (after 90 days) → Deep Archive (after 365 days) → Expire.	S3
+S3 Access Control mechanisms (main ones)?	Bucket Policy (resource-based) – cross-account, public access, IP/HTTPS restrictions<br>IAM Policy (identity-based) – for internal users/roles<br>S3 ACLs – legacy; prefer bucket policies; AWS recommends disabling<br>Block Public Access – account or bucket override that blocks public access<br>S3 Object Ownership – controls who owns uploaded objects; can disable ACLs<br>VPC Endpoint Policy – controls access from within VPC via Gateway Endpoint	S3
+Exam trap about Block Public Access?	Has 4 settings (BlockPublicAcls, IgnorePublicAcls, BlockPublicPolicy, RestrictPublicBuckets). If ANY “block” setting is ON at account level, it overrides bucket-level settings. First line of defense against accidental public exposure.	S3 exam-trap
+SSE-S3 encryption – key facts?	AES-256; S3 manages keys completely. Simplest option; no key management overhead. Default since Jan 2023.	S3
+SSE-KMS – when to choose and key benefit?	“Audit who decrypted”, “compliance”, “key rotation needed”. Keys managed by AWS KMS; full audit trail in CloudTrail. You control the key policy.	S3 KMS
+SSE-C – key requirements?	Customer provides the key in every API request; S3 uses it and discards it. Must use HTTPS. “Bring your own key / customer-managed external key”.	S3
+Client-Side Encryption vs DSSE-KMS?	Client-Side: Encrypt before upload; data never plaintext in AWS.<br>DSSE-KMS: Dual-layer encryption using KMS (“double encryption”, government/defense compliance).	S3
+CRR vs SRR – main purposes?	CRR (Cross-Region): Disaster recovery, lower latency to other regions, compliance.<br>SRR (Same-Region): Log aggregation, prod-to-test sync, data sovereignty within region.	S3
+S3 Replication – versioning and existing objects?	Versioning required on both source and destination. Existing objects are NOT replicated automatically — use S3 Batch Replication. Delete markers are NOT replicated by default (opt-in). No chaining of replicas (A→B→C does not work).	S3
+S3 Replication Time Control (RTC)?	Guarantees 99.99% of objects are replicated within 15 minutes. Use when RPO requirement is 15 minutes.	S3
+Multi-part Upload – thresholds?	Recommended for files > 100 MB; required for files > 5 GB. Enables parallel upload.	S3
+S3 Transfer Acceleration – how it works?	Uses CloudFront edge locations + AWS backbone to speed up uploads from distant users.	S3
+S3 baseline performance numbers?	3,500 PUT/COPY/POST/DELETE per second per prefix; 5,500 GET/HEAD per second per prefix.	S3
+Exam trap – is S3 a filesystem?	No. You cannot mount S3 natively like NFS/SMB. Use EFS for shared filesystem needs. S3 File Gateway (Storage Gateway) can present S3 as an NFS/SMB mount for on-premises workloads.	S3 exam-trap
+S3 File Gateway – protocol and use case?	NFS / SMB. Store files as S3 objects; on-prem apps access S3 via file protocol.	StorageGateway
+FSx File Gateway – protocol and use case?	SMB. Cache frequently accessed Windows files on-prem; Windows Active Directory integration.	StorageGateway
+Volume Gateway (Cached) – how it works?	iSCSI block. Primary storage in S3 + local cache for recently accessed data → low latency for hot data.	StorageGateway
+Volume Gateway (Stored) – how it works?	iSCSI block. Full dataset kept on-premises; asynchronous backup to S3 as EBS snapshots.	StorageGateway
+Tape Gateway – protocol and use case?	iSCSI VTL (Virtual Tape Library). Replace physical tape with virtual tapes; integrates with Veeam/Commvault. Backend is S3/Glacier.	StorageGateway
+Storage Gateway mnemonic?	File = NFS/SMB → S3 | Volume = Block (iSCSI) | Tape = VTL.<br>“On-prem NFS access to S3” → S3 File Gateway.<br>“Replace physical tape backup” → Tape Gateway.	StorageGateway mnemonic

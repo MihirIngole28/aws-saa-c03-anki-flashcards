@@ -1,0 +1,23 @@
+What is IAM?	Global service that controls WHO can do WHAT to WHICH AWS resources. Free, not region-specific, foundational to every AWS architecture.	IAM
+IAM User – what is it and key fact?	Permanent identity for a person or application. Has long-term credentials (password + access keys). Analogy: employee badge.	IAM
+IAM Group – key facts?	Collection of users sharing the same permissions. Groups cannot be nested. Best practice: attach policies to groups, not directly to users. Analogy: department.	IAM
+IAM Role – what is it and key fact?	Temporary identity assumed by services, users, or external accounts. No long-term credentials; uses STS tokens (15 min–36 hrs). Analogy: visitor badge.	IAM
+IAM Policy – what is it and critical rule?	JSON document defining Allow/Deny for actions on resources. Explicit Deny always wins over any Allow. Analogy: rulebook.	IAM
+What is STS?	Security Token Service — issues temporary credentials. Key APIs: AssumeRole, AssumeRoleWithWebIdentity, GetFederationToken. Analogy: temp-pass vending machine.	IAM
+IAM Policy Evaluation Logic (priority order)?	1. Explicit Deny in ANY policy → DENY (highest)<br>2. Organizations SCP<br>3. Resource-based policy<br>4. Identity-based policy<br>5. Permission Boundary<br>6. Session Policy (lowest)	IAM exam-trap
+Exam trap about policies with no explicit Allow?	No explicit Allow = implicit DENY. A user with no policies attached cannot do anything.	IAM exam-trap
+When should you use an IAM Role for an EC2 instance that needs to read S3?	Attach IAM Role to the EC2 instance profile. Never store access keys on EC2 (they can be stolen from metadata).	IAM
+When should you use an IAM Role for Lambda that needs to write to DynamoDB?	Use the Lambda Execution Role (provides temporary credentials automatically).	IAM
+Cross-account access pattern (Account A needs Account B’s S3)?	Create a Role in Account B; users/services in Account A AssumeRole. Do not copy credentials.	IAM
+How do mobile app users (millions) get AWS access?	Cognito Identity Pool + Web Identity Federation. Cannot create an IAM user per customer.	IAM Cognito
+On-prem employees need AWS access via Active Directory?	AWS SSO / IAM Identity Center with AD connector (SAML 2.0 federation). No need to create AWS users.	IAM
+Third-party audit needs read-only access?	Role with External ID (protects against Confused Deputy problem).	IAM
+AWS Managed vs Customer Managed vs Inline Policies?	AWS Managed: Pre-built by AWS; cannot modify; may be overly permissive.<br>Customer Managed: You create/maintain; reusable; best practice for production/least privilege.<br>Inline: Embedded in one entity; deleted with entity; hard to audit; generally discouraged.	IAM
+What is a Permission Boundary?	Sets the MAXIMUM permissions an IAM entity can have. Effective permissions = intersection of identity policy AND permission boundary. Prevents privilege escalation when developers create roles/users.	IAM
+Permission Boundary analogy?	Think of it as a fence. Identity policy says what they CAN do; boundary says what the fence allows. Only actions inside BOTH are permitted.	IAM
+Root account best practices?	Enable MFA immediately; never use for day-to-day tasks; delete access keys.	IAM
+MFA Delete on S3 – key fact?	Requires MFA to delete S3 objects or change bucket versioning. Needs root account to enable.	IAM S3
+Access key rotation recommendation?	Rotate every 90 days; use IAM Access Analyzer to find unused keys.	IAM
+Least Privilege principle?	Start with minimal permissions and add as needed; use Access Advisor to see what is actually used.	IAM
+What does IAM Access Analyzer do?	Identifies resources shared outside your organization/account (unintended public exposure).	IAM
+Mnemonic for core IAM entities?	GRUELS = Groups, Roles, Users, External IDs, Limits (boundaries), STS.	IAM mnemonic

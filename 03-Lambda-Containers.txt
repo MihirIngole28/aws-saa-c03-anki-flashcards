@@ -1,0 +1,16 @@
+Lambda max execution timeout?	15 minutes (900 seconds).	Lambda
+Lambda max memory and CPU relationship?	128 MB to 10,240 MB (10 GB). CPU scales proportionally with memory.	Lambda
+Lambda deployment package size limits?	50 MB (zipped), 250 MB (unzipped), 10 GB (container image).	Lambda
+Lambda /tmp storage limit?	10 GB (increased from 512 MB in 2023).	Lambda
+Lambda concurrent executions default?	1,000 per region (soft limit; can be increased).	Lambda
+Reserved concurrency vs Provisioned concurrency?	Reserved: Guarantees N executions for one function; reduces the pool available to others.<br>Provisioned: Pre-warms instances to eliminate cold starts (costs extra).	Lambda
+Common Lambda event sources/triggers?	S3, DynamoDB Streams, Kinesis, SQS, SNS, EventBridge, API Gateway, ALB, Cognito, etc.	Lambda
+Lambda pricing model?	Per request ($0.20 per million) + per GB-second of compute.	Lambda
+When to choose Lambda vs EC2?	Lambda: Event-driven/sporadic traffic, tasks < 15 min, no server management, variable load, simple stateless functions.<br>EC2: Continuously running processes, long-running jobs (> 15 min), full OS control, predictable steady-state load, stateful apps needing local storage.	Lambda EC2
+Asynchronous Lambda error handling?	Retries twice on failure automatically. Configure on-success and on-failure destinations (SQS, SNS, EventBridge, another Lambda). Modern replacement for DLQs (DLQs still work).	Lambda
+SQS trigger with Lambda – important details?	Lambda polls SQS and processes up to 10 messages per batch. On failure, messages return to the queue (up to maxReceiveCount), then go to DLQ. Use partial batch response to report only failed messages.	Lambda SQS
+ECS (Elastic Container Service) – description and when to choose?	AWS-native container orchestration; simpler and tightly integrated. Launch types: EC2 (you manage servers) or Fargate (serverless). Choose when: “AWS-native”, “simpler Kubernetes alternative”, “Docker on AWS”.	Containers ECS
+EKS (Elastic Kubernetes Service) – description and when to choose?	Managed Kubernetes; industry standard and portable. Launch types: EC2, Fargate, or Outposts. Choose when: “Kubernetes”, “multi-cloud”, “team knows K8s”, “complex orchestration”.	Containers EKS
+Fargate – what is it and exam trap?	Serverless compute engine for containers (works with ECS or EKS). Exam trap: Fargate is NOT an independent service — it is a launch type for ECS or EKS. “Serverless containers” = ECS/EKS with Fargate launch type.	Containers Fargate exam-trap
+App Runner – when to choose?	Fully managed; source code or container → auto-scaled web service. Choose when: “simplest deployment”, “just run my web app”, “developer-focused”.	Containers
+ECR (Elastic Container Registry) – what is it?	Managed Docker container registry. Store Docker images privately on AWS; integrates natively with ECS/EKS.	Containers ECR

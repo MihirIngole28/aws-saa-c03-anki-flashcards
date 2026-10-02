@@ -1,0 +1,42 @@
+RDS – type and best for?	Relational (SQL). Traditional OLTP, existing SQL apps. Managed; automated backups; Multi-AZ; Read Replicas.	Database RDS
+Aurora – key differentiators?	Relational (MySQL/Postgres compatible). High-performance OLTP / SaaS. 5× faster than MySQL; 6-copy storage across 3 AZs; Aurora Serverless available.	Database Aurora
+DynamoDB – type and best for?	NoSQL Key-Value + Document. High-scale internet apps, gaming, IoT, session data. Single-digit ms at any scale; serverless; Global Tables.	Database DynamoDB
+ElastiCache Redis vs Memcached?	Redis: Session store, real-time leaderboards, pub/sub, ML feature store. Sub-ms latency; persistence options; cluster mode.<br>Memcached: Simple distributed cache; stateless. No persistence; no replication; multi-threaded.	Database ElastiCache
+Redshift – type and best for?	Columnar Data Warehouse (SQL). OLAP, BI, analytics on large datasets. Columnar storage; MPP; Redshift Spectrum can query S3.	Database Redshift
+Neptune – type and use cases?	Graph database. Social networks, fraud detection, knowledge graphs. Supports Gremlin (property graph) + SPARQL (RDF).	Database Neptune
+DocumentDB – what is it?	Document store (MongoDB-compatible). Content management, catalogs, user profiles. Managed; 6 copies like Aurora.	Database DocumentDB
+Keyspaces – type and best for?	Wide-column (Cassandra-compatible). IoT, time-series, high-write workloads. Serverless; CQL compatible; pay-per-request.	Database Keyspaces
+Timestream – type and best for?	Time-series database. IoT sensor data, DevOps metrics, telemetry. Built-in time-series analytics; auto-tiering.	Database Timestream
+QLDB – type and best for?	Ledger (immutable). Financial transactions, supply-chain audit trail. Cryptographically verifiable; centrally owned.	Database QLDB
+OpenSearch Service – type and use cases?	Search + Analytics. Log analytics, full-text search, dashboards. Elasticsearch API compatible; pairs with Kibana/OpenSearch Dashboards.	Database OpenSearch
+Multi-AZ vs Read Replica – purpose?	Multi-AZ: High Availability (failover).<br>Read Replica: Performance (read scaling).	RDS
+Multi-AZ vs Read Replica – replication type?	Multi-AZ: Synchronous (standby always in sync).<br>Read Replica: Asynchronous (slight lag possible).	RDS
+Multi-AZ vs Read Replica – is the secondary readable?	Multi-AZ: NO – standby is passive; only used during failover.<br>Read Replica: YES – can serve read traffic.	RDS exam-trap
+Multi-AZ failover time and cross-region support?	Failover ~1–2 minutes (automatic DNS flip). Multi-AZ is only within the same region. Read Replicas can be cross-region (for DR).	RDS
+Exam keywords for Multi-AZ vs Read Replica?	Multi-AZ: “availability”, “failover”, “disaster recovery”.<br>Read Replica: “performance”, “read traffic”, “reporting”, “analytics”.	RDS
+Critical exam trap about Multi-AZ + Read Replicas?	Multi-AZ does NOT improve read performance (standby is not readable). If the question needs both better read performance AND high availability, the answer uses BOTH Multi-AZ and Read Replicas.	RDS exam-trap
+RDS Automated Backups – what do they provide?	Daily snapshot + transaction logs → Point-in-Time Restore (PITR) up to 35 days. Stored in S3.	RDS
+RDS Manual Snapshots – key facts?	User-initiated; retained indefinitely until you delete them. Can be shared across regions/accounts.	RDS
+RDS Restore behavior – important fact?	Always creates a NEW DB instance. You cannot restore in-place. You must update the application connection string.	RDS
+RDS Deletion Protection?	Enable to prevent accidental deletion. Must be disabled before you can terminate the instance.	RDS
+Aurora storage architecture vs standard RDS?	Shared cluster volume: 6 copies across 3 AZs, auto-grows in 10 GB increments up to 128 TB. Standard RDS uses single-instance storage or gp3/io1 EBS.	Aurora
+Aurora Read Replicas limit vs RDS?	Aurora supports up to 15 Aurora Replicas. Standard RDS supports up to 5.	Aurora
+Aurora failover time vs Multi-AZ RDS?	Aurora: usually < 10 seconds (max < 30 s) — automatically promotes a replica. Multi-AZ RDS: ~1–2 minutes.	Aurora
+What is Aurora Backtrack?	Rewind the database to a point in time WITHOUT restoring from backup (takes seconds, up to 72 hours back). Standard RDS cannot do this — you must restore to a new instance.	Aurora
+Aurora Serverless v2 – key benefit?	Auto-scales read/write capacity in fractions of ACUs and you pay per use. Standard RDS requires choosing instance size upfront.	Aurora
+Aurora Global Database – key numbers and when to use?	1 primary region + up to 5 secondary read regions; < 1 second replication lag; RTO < 1 minute.<br>Exam tip: If the question says “RPO of seconds” or “RTO under 1 minute” across regions → Aurora Global Database. Also useful for local reads to reduce global latency.	Aurora
+DynamoDB Primary Key types?	Simple (Partition Key only) or Composite (Partition Key + Sort Key). Design the partition key for uniform distribution to avoid hot partitions.	DynamoDB
+DynamoDB Read Consistency models and RCU cost?	Eventually Consistent (default, cheaper): 0.5 RCU per 4 KB<br>Strongly Consistent: 1 RCU per 4 KB (2× cost)<br>Use Strongly Consistent for financial apps that need the latest data.	DynamoDB
+DynamoDB Capacity Modes – when to choose each?	Provisioned: Specify RCU/WCU; predictable cost. Best with Auto Scaling for steady load + spikes.<br>On-Demand: Pay per request; best for unpredictable / variable load.	DynamoDB
+DynamoDB Streams – what is it and common uses?	Ordered stream of item changes with 24-hour retention. Triggers Lambda or Kinesis. Used for change data capture, cross-region replication, and event-driven patterns.	DynamoDB
+DynamoDB TTL – what does it do?	Automatically deletes items after a timestamp expires. No cost for the deletions. Perfect for session expiry, log retention, ephemeral data.	DynamoDB
+DynamoDB Accelerator (DAX) – what is it?	Write-through in-memory cache that provides microsecond read latency. No application code changes needed for reads. Caches individual item reads and query results.	DynamoDB
+DynamoDB Global Tables – key characteristics?	Multi-region, multi-active (active-active) replication. DynamoDB Streams must be enabled. Write to any region; read from the nearest region.	DynamoDB
+DynamoDB Transactions – what do they provide?	ACID transactions across multiple items/tables using TransactWrite and TransactGet. Used for financial apps, order management, inventory systems.	DynamoDB
+LSI vs GSI – key differences?	LSI (Local Secondary Index): Created at table creation ONLY; same partition key, different sort key; Strongly consistent OK; shares table capacity.<br>GSI (Global Secondary Index): Created any time; different partition and/or sort key; Eventually consistent ONLY; has its own capacity.	DynamoDB
+LSI / GSI mnemonic?	LSI = Local = Same partition key = created at table Launch.<br>GSI = Global = Greater flexibility = can be added anytime, own capacity.	DynamoDB mnemonic
+Lazy Loading (Cache-Aside) – how it works, best for, risk?	Check cache → miss → fetch from DB → write to cache. Best for read-heavy workloads that can tolerate some stale data. Risk: cache-miss penalty (3 trips) and stale data if DB changes without updating cache.	ElastiCache
+Write-Through – how it works, best for, risk?	Write to DB and cache simultaneously. Best when data freshness is critical and dataset is small. Risk: write penalty (2 trips per write) and cache churn if data is rarely read.	ElastiCache
+Write-Behind (Write-Back) – how it works and main risk?	Write to cache first; asynchronously write to DB. Best for write-heavy workloads. Risk: data loss if cache fails before the DB write completes.	ElastiCache
+Cache TTL – purpose and trade-off?	Items expire after N seconds to prevent stale data buildup. Too short → more cache misses; too long → more stale data.	ElastiCache
+Redis vs Memcached – exam decision rule?	Choose Redis if the question mentions ANY of: persistence, pub/sub, Lua scripting, sorted sets (leaderboards), geospatial, replication, Multi-AZ, backups, or complex data structures.<br>Choose Memcached only for “simple, stateless cache needing horizontal scale with multiple CPU cores.”	ElastiCache exam-trap

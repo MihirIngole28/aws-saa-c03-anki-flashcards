@@ -1,0 +1,63 @@
+Key S3 numbers?	Max object 5 TB; multipart required > 5 GB (recommended > 100 MB); Standard durability 11 nines; availability 99.99%.	KeyNumbers
+Key Lambda numbers?	Max timeout 15 min; max memory 10 GB; default concurrent executions 1,000 per region (soft).	KeyNumbers
+Key SQS / Kinesis / DynamoDB numbers?	SQS: 256 KB max message (2 GB with Extended Client); 14-day retention; FIFO 300 TPS (3 k with batching); visibility timeout max 12 h.<br>Kinesis: 1 MB/s write or 1 000 records/s per shard; 2 MB/s read (10 MB/s with Enhanced Fan-Out).<br>DynamoDB: 400 KB max item size.	KeyNumbers
+Key Aurora / RDS / VPC numbers?	RDS Multi-AZ failover ~1–2 min; Aurora < 30 s; Aurora storage grows in 10 GB steps to 128 TB; max 15 Aurora replicas.<br>VPC: default 5 per region; CIDR /28–/16; 5 reserved IPs per subnet; Spread placement group max 7 instances per AZ.	KeyNumbers
+“Most resilient / performant / cost-effective” mnemonic?	Most RESILIENT = Multi-AZ + Multi-Region + Backups.<br>Most PERFORMANT = Caching + right instance type + CDN + Read Replicas.<br>Most COST-EFFECTIVE = Spot / Reserved / Savings Plans + right storage tier + serverless where applicable.	KeyNumbers mnemonic
+Final exam-day tips?	Eliminate two wrong answers first (50/50).<br>“Most cost-effective” → look for Spot, Reserved, lifecycle, serverless, Fargate, Savings Plans.<br>“Most operationally efficient” → managed services, serverless, IaC, SSM.<br>Highly available minimum = Multi-AZ (2 AZs).<br>Always least privilege; Roles > Users; never hard-code keys.<br>Watch scope (single account/region vs global).<br>“Existing” on-prem systems → migration or compatible managed service (DMS+SCT, MQ, MSK).	ExamTips
+Critical e-commerce app – single EC2 + EBS needs RTO < 5 min, RPO < 1 min?	Multi-AZ RDS (or Aurora) for near-zero RPO + EC2 Auto Scaling Group across 2 AZs behind ALB for fast RTO. Aurora gives even faster failover (< 30 s).	Practice
+Serve global images from S3 with low latency while blocking direct public access?	CloudFront distribution with S3 origin + Origin Access Control (OAC). Update bucket policy so only CloudFront can access the bucket.	Practice
+Atomic multi-table DynamoDB transactions at variable high throughput?	DynamoDB Transactions (TransactWrite) + On-Demand capacity mode. Transactions consume 2× WCUs.	Practice
+Ingest 1 TB/hour clickstream + real-time trending analytics?	Kinesis Data Streams (enough shards) → Kinesis Data Analytics (Flink) for real-time aggregates → DynamoDB for serving. Firehose → S3 for long-term Athena analysis.	Practice
+Slow repetitive product-catalog reads (data changes ≤ once/hour)?	ElastiCache Redis with lazy-loading (TTL ≈ 1 hour) + optional RDS Read Replicas. More cost-effective than upsizing the DB instance.	Practice
+Discover PII in S3 + encrypt + detect anomalous access + full audit?	Macie (discover) + SSE-KMS with customer-managed key (encrypt + audit) + GuardDuty (anomalous access) + CloudTrail data events (full access log).	Practice
+Private-subnet EC2 needs DynamoDB without internet or NAT charges?	VPC Gateway Endpoint for DynamoDB (free, private AWS network path).	Practice
+Nightly fault-tolerant Spark jobs on S3 logs – most cost-effective compute?	EMR with Spot for task nodes + On-Demand for master/core nodes.	Practice
+100 TB logs – frequent 0–30 d, rare 30–90 d, almost never after 90 d, must keep 365 d+ with ≤ 12 h retrieval?	Lifecycle: Standard → Standard-IA (30 d) → Glacier Flexible Retrieval (90 d) → Glacier Deep Archive (365 d).	Practice
+Predictable weekday 8–6 traffic, negligible nights/weekends – cost strategy?	Scheduled Auto Scaling. Reserved Instances for the baseline capacity. On-Demand for the weekday peak. RDS Multi-AZ Reserved Instance (runs 24/7).	Practice
+I need to store files/objects of any size, globally durable?	S3	QuickRef
+I need persistent block storage for one EC2 instance?	EBS	QuickRef
+I need shared filesystem across many Linux EC2 instances?	EFS	QuickRef
+I need shared filesystem for Windows workloads with Active Directory?	FSx for Windows File Server	QuickRef
+I need ultra-high IOPS for HPC or ML workloads?	FSx for Lustre	QuickRef
+I need relational data with SQL queries (managed)?	RDS	QuickRef
+I need relational data needing high performance + auto-scaling?	Aurora	QuickRef
+I need non-relational key-value at any scale?	DynamoDB	QuickRef
+I need in-memory caching for microsecond reads (DynamoDB)?	DAX	QuickRef
+I need general-purpose in-memory cache with rich data types?	ElastiCache for Redis	QuickRef
+I need simple stateless distributed cache?	ElastiCache for Memcached	QuickRef
+I need time-series data (IoT, metrics)?	Timestream	QuickRef
+I need graph data (social networks, fraud)?	Neptune	QuickRef
+I need document data (MongoDB workloads)?	DocumentDB	QuickRef
+I need data warehouse for OLAP analytics?	Redshift	QuickRef
+I need ledger with cryptographic audit trail?	QLDB	QuickRef
+I need search index with full-text search?	OpenSearch Service	QuickRef
+I need secrets / credentials with auto-rotation?	Secrets Manager	QuickRef
+I need configuration values and non-sensitive secrets?	Parameter Store (SSM)	QuickRef
+I need virtual machines with full OS control?	EC2	QuickRef
+I need to run code without managing servers (< 15 min tasks)?	Lambda	QuickRef
+I need to run Docker containers on managed infrastructure?	ECS on Fargate	QuickRef
+I need to run Docker containers with Kubernetes (managed K8s)?	EKS	QuickRef
+I need to deploy code without managing servers/containers (PaaS)?	Elastic Beanstalk	QuickRef
+I need to isolate workloads in a private network?	VPC (with private subnets)	QuickRef
+I need to give public internet access to EC2 in private subnet?	NAT Gateway	QuickRef
+I need to connect two VPCs directly?	VPC Peering	QuickRef
+I need to connect many VPCs in a hub-and-spoke model?	Transit Gateway	QuickRef
+I need to connect on-premises to AWS over internet (encrypted)?	Site-to-Site VPN	QuickRef
+I need to connect on-premises to AWS with dedicated line?	Direct Connect	QuickRef
+I need to expose a service to other accounts without full VPC peering?	PrivateLink	QuickRef
+I need to access S3/DynamoDB from VPC without internet (free)?	VPC Gateway Endpoint	QuickRef
+I need to distribute HTTP/HTTPS traffic across EC2/containers/Lambda?	ALB (Layer 7)	QuickRef
+I need to distribute TCP/UDP traffic with static IPs?	NLB (Layer 4)	QuickRef
+I need to inspect traffic through virtual security appliances?	GWLB (Layer 3/4)	QuickRef
+I need to control who can do what in AWS?	IAM (Users, Roles, Policies)	QuickRef
+I need to authenticate users for my application?	Cognito User Pools	QuickRef
+I need to give app users temporary AWS credentials?	Cognito Identity Pools	QuickRef
+I need to detect threats and anomalous behavior?	GuardDuty	QuickRef
+I need to find vulnerabilities in EC2/containers/Lambda?	Inspector	QuickRef
+I need to discover PII in S3?	Macie	QuickRef
+I need to protect web apps from attacks (XSS, SQLi)?	WAF	QuickRef
+I need to protect from DDoS attacks?	Shield (Standard free; Advanced paid)	QuickRef
+I need to audit API calls (who did what, when)?	CloudTrail	QuickRef
+I need to track resource configuration changes + compliance?	Config	QuickRef
+I need to encrypt data with managed keys?	KMS	QuickRef
+I need to encrypt data with hardware key isolation (FIPS 140-2 L3)?	CloudHSM	QuickRef
